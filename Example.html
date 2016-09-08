@@ -61,7 +61,19 @@
 			networkSource.on('change', function(evt){
         var src=evt.target;
         if(src.getState()=='ready'){
-          var graph=new Graph(createNetwork(networkLayer.getSource().getFeatures()));
+          var network=createNetwork(networkLayer.getSource().getFeatures());
+          var shortestPath=getShortestPath(network, [-5.808447003364563, 35.78528222343591], [-5.812851190567017, 35.784746963605144]);
+          var shortestPathLayer=new ol.layer.Vector({
+            source: new ol.source.Vector({
+              features: [new ol.Feature({
+                geometry: shortestPath
+              })]
+            }),
+            style: networkLayer.getStyle()
+          });
+          map.addLayer(shortestPathLayer);
+          shortestPathLayer.setVisible(true);
+          networkLayer.setVisible(false);
         }
       });
 			//console.log(JSON.stringify(graph));

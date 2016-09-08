@@ -1,8 +1,7 @@
+var wgs84Sphere = new ol.Sphere(6378137);
+
 function createNetwork(features){
 	var map=getVertices(features);
-	console.log("number of vertexes : "+features.length);
-	var wgs84Sphere = new ol.Sphere(6378137);
-	var countVertices=0;
 	for(var key in map){
 		var coords=key.split(",");
 		coords[0]=parseFloat(coords[0]);
@@ -19,11 +18,6 @@ function createNetwork(features){
 		map[key]=innerMap;
 	}
 	
-	//console.log(Object.keys(map));
-	//console.log("number of vertices supposed to be found : "+countVertices);
-	//console.log("number of vertices found : "+_.size(map));
-	console.log(JSON.stringify(map));
-	//var Graph = new Graph(map);
 	return map;
 }
 
@@ -33,9 +27,34 @@ function getVertices(features){
 		map[feature.getGeometry().getFirstCoordinate()]={};
 		map[feature.getGeometry().getLastCoordinate()]={};
 	});
-	console.log("number of vertices : "+_.size(map));
 	return map;
 }
-function getShortestPath(source, destination){
+function getShortestPath(map, source, destination){
+	var graph=new Graph(map);
+	var startPoint=source;
+	var endPoint=destination;
+	source=getClosestPoint(map, source);
+	destination=getClosestPoint(map, destination);
+	var shortestPathvertices=graph.findShortestPath(source, destination);
+	var shortestPath= new ol.geom.LineString();
+	shortestPath.appendCoordinate(startPoint);
+	for(var vertice in shortestPathvertices){
+		var _vertice=shortestPathvertices[vertice].split(",");
+		_vertice[0]=parseFloat(_vertice[0]);
+		_vertice[1]=parseFloat(_vertice[1]);
+		shortestPath.appendCoordinate(_vertice);
+	}
+	shortestPath.appendCoordinate(endPoint);
+	return shortestPath;
+}
 
+function getClosestPoint(map, point){
+	var distances={};
+	for(var key in map){
+		var coords=key.split(",");
+		coords[0]=parseFloat(coords[0]);
+		coords[1]=parseFloat(coords[1]);
+		distances[key]=wgs84Sphere.haversineDistance(coords,point);
+	}
+	return _.min(Object.keys(distances), function (o) { return distances[o]; });
 }
