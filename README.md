@@ -2,6 +2,7 @@ tried to use Dijkstra algorithm with spatial data offline on the browser, unfort
 so why not make my own ... I tried it for now and it's working ( at least on my setup)
 
 1- check if your road network is perfectly connected
+
 2- make sure that the vertices of your network aren't complicated otherwise you may have false routes
 
 How to use it :
@@ -15,11 +16,11 @@ How to use it :
   
   create your network from a featureCollection (linestring geometries):
   
-  var network = createNetwork(yourFeatureCollection);
+    var network = createNetwork(yourFeatureCollection);
   
   then you get the geometry of the shortest path between two set of coordinates following your network
   
-  var shortestPath = getShortestPath(network, coordsSource, coordsDestination);
+    var shortestPath = getShortestPath(network, coordsSource, coordsDestination);
   
   there is a working example on Example.html for the old Medina of Tangier
   
