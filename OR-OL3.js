@@ -1,27 +1,41 @@
 function createNetwork(features){
-	var map={};
+	var map=getVertices(features);
+	console.log("number of vertexes : "+features.length);
 	var wgs84Sphere = new ol.Sphere(6378137);
-	features.forEach(function(feature){
-		var featureID=feature.get('id');
-		var source=feature.getGeometry().getFirstCoordinate();
+	var countVertices=0;
+	for(var key in map){
+		var coords=key.split(",");
+		coords[0]=parseFloat(coords[0]);
+		coords[1]=parseFloat(coords[1]);
 		var innerMap={};
 		features.forEach(function(feature){
-			if(feature.get('id')!=featureID){
-				if(source == feature.getGeometry().getFirstCoordinate() || source == feature.getGeometry().getLastCoordinate()){
-					var tmpCoords=feature.getGeometry().getFirstCoordinate();
-					var target = (source==tmpCoords)?feature.getGeometry().getLastCoordinate():tmpCoords;
-					var distance=wgs84Sphere.haversineDistance(source,target);
-					innerMap[target]=distance;
-				}
+			if(key==feature.getGeometry().getFirstCoordinate().toString() || key==feature.getGeometry().getLastCoordinate().toString()){
+				var tmpCoords=feature.getGeometry().getFirstCoordinate();
+				var target=(key==tmpCoords.toString())?feature.getGeometry().getLastCoordinate():tmpCoords;
+				var distance=Math.round(wgs84Sphere.haversineDistance(coords,target));
+				innerMap[target]=distance;
 			}
 		});
-		map[source]=innerMap;
-	});
+		map[key]=innerMap;
+	}
 	
-	var Graph=new Graph(map);
-	return Graph;
+	//console.log(Object.keys(map));
+	//console.log("number of vertices supposed to be found : "+countVertices);
+	//console.log("number of vertices found : "+_.size(map));
+	console.log(JSON.stringify(map));
+	//var Graph = new Graph(map);
+	return map;
 }
 
+function getVertices(features){
+	var map={};
+	features.forEach(function(feature){
+		map[feature.getGeometry().getFirstCoordinate()]={};
+		map[feature.getGeometry().getLastCoordinate()]={};
+	});
+	console.log("number of vertices : "+_.size(map));
+	return map;
+}
 function getShortestPath(source, destination){
 
 }

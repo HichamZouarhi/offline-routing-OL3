@@ -6,6 +6,7 @@
     <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
     <script src="http://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
     <script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script>
+    <script src="required/underscore.js"></script>
     <script src="required/graph.js"></script>
     <script src="OR-OL3.js"></script>
   </head>
@@ -57,9 +58,13 @@
 			});
 			
 			map.addLayer(networkLayer);
-			
-			var graph=createNetwork(networkSource.getFeatures());
-			console.log(graph);
+			networkSource.on('change', function(evt){
+        var src=evt.target;
+        if(src.getState()=='ready'){
+          var graph=new Graph(createNetwork(networkLayer.getSource().getFeatures()));
+        }
+      });
+			//console.log(JSON.stringify(graph));
     </script>
   </body>
 </html>
