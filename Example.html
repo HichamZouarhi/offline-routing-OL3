@@ -11,6 +11,7 @@
     <script src="OR-OL3.js"></script>
   </head>
   <body>
+    <button id="getPath">Get Path</button>
     <div id="map" class="map" tabindex="0"></div>
     <script>
       var map = new ol.Map({
@@ -58,25 +59,62 @@
 			});
 			
 			map.addLayer(networkLayer);
-			networkSource.on('change', function(evt){
-        var src=evt.target;
-        if(src.getState()=='ready'){
-          var network=createNetwork(networkLayer.getSource().getFeatures());
-          var shortestPath=getShortestPath(network, [-5.808447003364563, 35.78528222343591], [-5.812851190567017, 35.784746963605144]);
-          var shortestPathLayer=new ol.layer.Vector({
-            source: new ol.source.Vector({
-              features: [new ol.Feature({
-                geometry: shortestPath
-              })]
-            }),
-            style: networkLayer.getStyle()
-          });
-          map.addLayer(shortestPathLayer);
-          shortestPathLayer.setVisible(true);
-          networkLayer.setVisible(false);
-        }
-      });
-			//console.log(JSON.stringify(graph));
+
+			var sourceFeature = new ol.Feature({
+        	geometry: new ol.geom.Point([ -5.808447003364563, 35.78528222343591]),
+			});
+			var sourceStyle = new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+          anchor: [0.5, 0],
+          anchorOrigin: 'bottom-left',
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          src: 'img/marker-source.png'
+        }))
+    	});
+
+    	sourceFeature.setStyle(sourceStyle);
+
+    	var destinationFeature = new ol.Feature({
+        	geometry: new ol.geom.Point([ -5.812851190567017, 35.784746963605144]),
+			});
+			var destinationStyle = new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+          anchor: [0.5, 0],
+          anchorOrigin: 'bottom-left',
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          src: 'img/marker-destination.png'
+        }))
+    	});
+
+    	destinationFeature.setStyle(destinationStyle);
+
+    	var	startEndSource = new ol.source.Vector({
+        	features: [sourceFeature, destinationFeature]
+    	});
+
+    	var startEndLayer = new ol.layer.Vector({
+        	source: startEndSource
+			});
+
+			map.addLayer(startEndLayer);
+      
+      document.getElementById('getPath').onclick = function() {
+        var network=createNetwork(networkLayer.getSource().getFeatures());
+        var shortestPath=getShortestPath(network, [-5.808447003364563, 35.78528222343591], [-5.812851190567017, 35.784746963605144]);
+        var shortestPathLayer=new ol.layer.Vector({
+         	source: new ol.source.Vector({
+         		features: [new ol.Feature({
+           		geometry: shortestPath
+           	})]
+         	}),
+         	style: networkLayer.getStyle()
+       	});
+       	map.addLayer(shortestPathLayer);
+       	shortestPathLayer.setVisible(true);
+       	networkLayer.setVisible(false);
+      };
     </script>
   </body>
 </html>
