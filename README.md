@@ -24,3 +24,4 @@ How to use it :
   
   there is a working example on Example.html for the old Medina of Tangier
   
+NOTE: credits for the graph.js goes to https://github.com/andrewhayward/dijkstra
