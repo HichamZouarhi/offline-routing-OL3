@@ -35,7 +35,7 @@ function getShortestPath(map, source, destination){
 	source=getClosestPoint(map, source);
 	destination=getClosestPoint(map, destination);
 	var shortestPathvertices=graph.findShortestPath(source, destination);
-	var shortestPath= new ol.geom.LineString();
+	var shortestPath= new ol.geom.LineString([startPoint]);
 	shortestPath.appendCoordinate(startPoint);
 	for(var vertice in shortestPathvertices){
 		var _vertice=shortestPathvertices[vertice].split(",");
