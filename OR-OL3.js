@@ -1,4 +1,3 @@
-var wgs84Sphere = new ol.Sphere(6378137);
 
 function createNetwork(features){
 	var map=getVertices(features);
@@ -11,7 +10,7 @@ function createNetwork(features){
 			if(key==feature.getGeometry().getFirstCoordinate().toString() || key==feature.getGeometry().getLastCoordinate().toString()){
 				var tmpCoords=feature.getGeometry().getFirstCoordinate();
 				var target=(key==tmpCoords.toString())?feature.getGeometry().getLastCoordinate():tmpCoords;
-				var distance=Math.round(wgs84Sphere.haversineDistance(coords,target));
+				var distance=Math.round(ol.sphere.getDistance(coords,target));
 				innerMap[target]=distance;
 			}
 		});
@@ -36,7 +35,7 @@ function getShortestPath(map, source, destination){
 	source=getClosestPoint(map, source);
 	destination=getClosestPoint(map, destination);
 	var shortestPathvertices=graph.findShortestPath(source, destination);
-	var shortestPath= new ol.geom.LineString();
+	var shortestPath= new ol.geom.LineString([startPoint]);
 	shortestPath.appendCoordinate(startPoint);
 	for(var vertice in shortestPathvertices){
 		var _vertice=shortestPathvertices[vertice].split(",");
@@ -54,7 +53,7 @@ function getClosestPoint(map, point){
 		var coords=key.split(",");
 		coords[0]=parseFloat(coords[0]);
 		coords[1]=parseFloat(coords[1]);
-		distances[key]=wgs84Sphere.haversineDistance(coords,point);
+		distances[key]=ol.sphere.getDistance(coords,point);
 	}
 	return _.min(Object.keys(distances), function (o) { return distances[o]; });
 }
